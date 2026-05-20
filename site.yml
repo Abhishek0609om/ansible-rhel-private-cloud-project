@@ -4,7 +4,7 @@
 - name: Apply base configuration
   hosts: all:!control
   become: true
-  serial: 1
+ # serial: 1
 
   tasks:
 
