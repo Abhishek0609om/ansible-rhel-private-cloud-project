@@ -143,3 +143,20 @@
     - name: Reload storage firewall rules
       command: firewall-cmd --reload
       changed_when: true
+# Task 5 : Mount Centralized NFS Storage on Web Servers
+- name: Mount Centralized NFS Storage on Web Client Nodes
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Ensure NFS client helper utilities are present
+      yum:
+        name: nfs-utils
+        state: present
+
+    - name: Mount remote NFS directory to Apache web root folder
+      ansible.posix.mount:
+        src: "172.31.1.36:/var/nfsshare/html" 
+        path: /var/www/html
+        fstype: nfs
+        opts: rw,sync
+        state: mounted 
