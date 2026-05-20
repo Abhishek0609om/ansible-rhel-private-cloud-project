@@ -155,7 +155,7 @@
         state: present
         
     - name: Mount NFS share    
-      mount: 
+      ansible.posix.mount:
         src: "172.31.1.36:/var/nfsshare/html" 
         path: /var/www/html
         fstype: nfs
