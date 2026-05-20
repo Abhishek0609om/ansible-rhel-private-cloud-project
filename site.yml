@@ -3,7 +3,6 @@
 - name: Apply base configuration
   hosts: all:!control
   become: true
-
   tasks:
     - name: Clean package cache
       shell: |
@@ -24,21 +23,20 @@
 - name: Configure web servers
   hosts: webservers
   become: true
-
   tasks:
     - name: Install Apache
       shell: dnf install -y httpd
+
+    - name: Disable default Red Hat welcome page config file
+      file:
+        path: /etc/httpd/conf.d/welcome.conf
+        state: absent # FIXED: Forcefully drops the stock page block
 
     - name: Start Apache
       service:
         name: httpd
         state: started
         enabled: true
-
-    - name: Create test page
-      copy:
-        content: "<h1>Welcome to {{ ansible_hostname }}</h1>"
-        dest: /var/www/html/index.html
 
     - name: Open firewall for HTTP
       shell: firewall-cmd --permanent --add-service=http
@@ -115,12 +113,6 @@
         owner: nobody
         group: nobody
 
-    - name: Create a synchronized master index file
-      copy:
-        content: "<h1>Welcome to the Private Cloud Cluster via Shared NFS Storage!</h1>"
-        dest: /var/nfsshare/html/index.html
-        mode: '0644'
-
     - name: Configure the NFS export access control list
       copy:
         dest: /etc/exports
@@ -161,7 +153,18 @@
         fstype: nfs
         opts: rw,sync
         state: mounted 
-        
+
+    - name: Create synchronized master index file inside the mounted storage root
+      copy:
+        content: "<h1>Welcome to the Private Cloud Cluster via Shared NFS Storage!</h1>"
+        dest: /var/www/html/index.html # FIXED: Writes directly inside the live cluster mount point
+        mode: '0644'
+
+    - name: Restart Apache web service to flush welcome file handle state
+      service:
+        name: httpd
+        state: restarted
+
 # Task 6 : Relational Database Node Configuration
 - name: Configure Secure Relational Database Node
   hosts: db
@@ -187,4 +190,3 @@
     - name: Reload database firewall system rules
       command: firewall-cmd --reload
       changed_when: true
-
