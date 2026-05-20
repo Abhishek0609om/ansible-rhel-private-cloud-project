@@ -1,5 +1,5 @@
 ---
-# Common configuration
+# Task 1: Common configuration
 - name: Apply base configuration
   hosts: all:!control
   become: true
@@ -20,7 +20,7 @@
         state: started
         enabled: true
 
-# Configure web servers
+# Task 2: Configure web servers
 - name: Configure web servers
   hosts: webservers
   become: true
@@ -94,5 +94,52 @@
       changed_when: true
 
     - name: Reload load balancer firewall
+      command: firewall-cmd --reload
+      changed_when: true
+
+# Task 4 : Centralized NFS Storage Configuration
+- name: Configure Centralized NFS Storage Server
+  hosts: storage
+  become: true
+  tasks:
+    - name: Install NFS utility packages
+      yum:
+        name: nfs-utils
+        state: present
+
+    - name: Create the shared web assets export directory
+      file:
+        path: /var/nfsshare/html
+        state: directory
+        mode: '0777'
+        owner: nobody
+        group: nobody
+
+    - name: Create a synchronized master index file
+      copy:
+        content: "<h1>Welcome to the Private Cloud Cluster via Shared NFS Storage!</h1>"
+        dest: /var/nfsshare/html/index.html
+        mode: '0644'
+
+    - name: Configure the NFS export access control list
+      copy:
+        dest: /etc/exports
+        content: "/var/nfsshare/html 172.31.0.0/16(rw,sync,no_root_squash,no_all_squash)"
+
+    - name: Start and enable core NFS server daemons
+      service:
+        name: nfs-server
+        state: restarted
+        enabled: true
+
+    - name: Open firewall zones for storage traffic services
+      command: firewall-cmd --permanent --add-service={{ item }}
+      loop:
+        - nfs
+        - rpc-bind
+        - mountd
+      changed_when: true
+
+    - name: Reload storage firewall rules
       command: firewall-cmd --reload
       changed_when: true
