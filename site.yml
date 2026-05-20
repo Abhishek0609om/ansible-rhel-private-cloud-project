@@ -1,7 +1,7 @@
 ---
-# Task 1 : Common configuration
+# Common configuration
 
-- name: Apply base configuration to all servers
+- name: Apply base configuration
   hosts: all:!control
   become: true
   serial: 1
@@ -9,50 +9,44 @@
   tasks:
 
     - name: Clean package cache
-      shell: dnf clean all
+      shell: |
+        rm -rf /var/cache/dnf/*
+        dnf clean all
 
-    - name: Install required common packages only
-      yum:
-        name:
-          - vim
-          - curl
-          - wget
-          - firewalld
-        state: present
+    - name: Install required packages
+      shell: |
+        dnf install -y vim curl wget firewalld
 
-    - name: Start and enable firewalld
+    - name: Start firewalld
       service:
         name: firewalld
         state: started
-        enabled: true
+        enabled: yes
 
 
-# Task 2 : Configure web servers
+# Configure web servers
 
-- name: Configure Web Application servers
+- name: Configure web servers
   hosts: webservers
   become: true
 
   tasks:
 
     - name: Install Apache
-      yum:
-        name: httpd
-        state: present
+      shell: dnf install -y httpd
 
     - name: Start Apache
       service:
         name: httpd
         state: started
-        enabled: true
+        enabled: yes
 
     - name: Create test page
       copy:
         content: "<h1>Welcome to {{ ansible_hostname }}</h1>"
         dest: /var/www/html/index.html
-        mode: '0644'
 
-    - name: Open HTTP in firewall
+    - name: Open firewall for HTTP
       shell: firewall-cmd --permanent --add-service=http
 
     - name: Reload firewall
