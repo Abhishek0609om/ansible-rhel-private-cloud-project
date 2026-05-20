@@ -1,13 +1,10 @@
 ---
 # Common configuration
-
 - name: Apply base configuration
   hosts: all:!control
   become: true
- # serial: 1
 
   tasks:
-
     - name: Clean package cache
       shell: |
         rm -rf /var/cache/dnf/*
@@ -21,17 +18,14 @@
       service:
         name: firewalld
         state: started
-        enabled: yes
-
+        enabled: true
 
 # Configure web servers
-
 - name: Configure web servers
   hosts: webservers
   become: true
 
   tasks:
-
     - name: Install Apache
       shell: dnf install -y httpd
 
@@ -39,7 +33,7 @@
       service:
         name: httpd
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Create test page
       copy:
@@ -51,3 +45,54 @@
 
     - name: Reload firewall
       shell: firewall-cmd --reload
+
+# Task 3 : Load Balancer Configuration
+- name: Configure HAProxy Load Balancer
+  hosts: lb
+  become: true
+  tasks:
+    - name: Install HAProxy package
+      yum:
+        name: haproxy
+        state: present
+
+    - name: Deploy clean custom HAProxy configuration
+      copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+          global
+              log /dev/log local0
+              chroot /var/lib/haproxy
+              user haproxy
+              group haproxy
+              daemon
+
+          defaults
+              log global
+              mode http
+              timeout connect 5000ms
+              timeout client 50000ms
+              timeout server 50000ms
+
+          frontend http_front
+              bind *:80
+              default_backend http_back
+
+          backend http_back
+              balance roundrobin
+              server web1 172.31.1.155:80 check
+              server web2 172.31.1.88:80 check
+
+    - name: Start and enable HAProxy service
+      service:
+        name: haproxy
+        state: started
+        enabled: true
+
+    - name: Allow HTTP traffic in load balancer firewall
+      command: firewall-cmd --permanent --add-service=http
+      changed_when: true
+
+    - name: Reload load balancer firewall
+      command: firewall-cmd --reload
+      changed_when: true
