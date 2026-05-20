@@ -1,7 +1,7 @@
 ---
 # Task 1 : common configuration for all servers
 - name: Apply base configuration to all servers
-  hosts: all
+  hosts: all:!control
   become: true
   tasks:
     # REMOVED: Full OS system upgrade to prevent t3.micro memory exhaustion (rc 137)
