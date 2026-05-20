@@ -4,19 +4,16 @@
   hosts: all
   become: true
   tasks:
-    - name: Update all packages
-      yum:
-        name: '*'
-        state: latest
+    # REMOVED: Full OS system upgrade to prevent t3.micro memory exhaustion (rc 137)
 
-
-    - name: Install common packages
+    - name: Install common packages and system firewall tools
       yum:
         name:
           - vim
           - git
           - curl
           - wget
+          - python3-firewall  # FIXED: Added required Python library for firewall module
         state: present
 
 # Task 2 : specific configuration for web servers
@@ -46,4 +43,4 @@
         service: http
         permanent: true
         state: enabled
-        immediate: yes
+        immediate: true
