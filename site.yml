@@ -43,7 +43,7 @@
         mode: '0644'
 
     - name: ALLOW hTTP traffic in firewall
-      ansible.postfix.firewalld:
+      ansible.posix.firewalld:
         service: http
         permanent: true
         state: enabled
