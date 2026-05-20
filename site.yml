@@ -4,17 +4,25 @@
   hosts: all:!control
   become: true
   tasks:
-    # REMOVED: Full OS system upgrade to prevent t3.micro memory exhaustion (rc 137)
+    - name: Clean package manager cache to fix corruption
+      command: dnf clean all
 
-    - name: Install common packages and system firewall tools
+    - name: Install common packages and force fresh firewall utilities
       yum:
         name:
           - vim
           - git
           - curl
           - wget
-          - python3-firewall  # FIXED: Added required Python library for firewall module
+          - firewalld
+          - python3-firewall
         state: present
+
+    - name: Force start and enable firewalld daemon service
+      service:
+        name: firewalld
+        state: restarted
+        enabled: true
 
 # Task 2 : specific configuration for web servers
 - name: Configure web Application servers
@@ -38,9 +46,10 @@
         dest: /var/www/html/index.html
         mode: '0644'
 
-    - name: ALLOW hTTP traffic in firewall
-      ansible.posix.firewalld:
-        service: http
-        permanent: true
-        state: enabled
-        immediate: true
+    - name: ALLOW HTTP traffic using bulletproof system command
+      command: firewall-cmd --permanent --add-service=http
+      changed_when: true
+
+    - name: Reload firewall daemon to apply the change
+      command: firewall-cmd --reload
+      changed_when: true
