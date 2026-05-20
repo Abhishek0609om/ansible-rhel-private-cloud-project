@@ -157,13 +157,24 @@
     - name: Create synchronized master index file inside the mounted storage root
       copy:
         content: "<h1>Welcome to the Private Cloud Cluster via Shared NFS Storage!</h1>"
-        dest: /var/www/html/index.html # FIXED: Writes directly inside the live cluster mount point
+        dest: /var/www/html/index.html
         mode: '0644'
+
+    - name: Configure SELinux to allow Apache to read NFS directories
+      ansible.posix.seboolean:
+        name: httpd_use_nfs
+        state: true
+        persistent: true
+
+    - name: Fix SELinux file context permissions on the web root path
+      shell: chcon -R -t httpd_sys_content_t /var/www/html
+      failed_when: false
 
     - name: Restart Apache web service to flush welcome file handle state
       service:
         name: httpd
         state: restarted
+
 
 # Task 6 : Relational Database Node Configuration
 - name: Configure Secure Relational Database Node
