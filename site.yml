@@ -52,7 +52,7 @@
   become: true
   tasks:
     - name: Install HAProxy package
-      yum:
+      dnf:
         name: haproxy
         state: present
 
@@ -103,7 +103,7 @@
   become: true
   tasks:
     - name: Install NFS utility packages
-      yum:
+      dnf:
         name: nfs-utils
         state: present
 
@@ -150,11 +150,12 @@
   become: true
   tasks:
     - name: Ensure NFS client helper utilities are present
-      yum:
+      dnf:
         name: nfs-utils
         state: present
         
-    - mount: 
+    - name: Mount NFS share    
+      mount: 
         src: "172.31.1.36:/var/nfsshare/html" 
         path: /var/www/html
         fstype: nfs
