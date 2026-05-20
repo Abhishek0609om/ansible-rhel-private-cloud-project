@@ -1,0 +1,50 @@
+---
+# Task 1 : common configuration for all servers
+- name: Apply base configuration to all servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Update all packages
+      yum:
+        name: '*'
+        state: latest
+        only_upgrade: true
+
+
+    - name: Install common packages
+      yum:
+        name:
+          - vim
+          - git
+          - curl
+          - wget
+        state: present
+
+# Task 2 : specific configuration for web servers
+- name: Configure web Application servers
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Install Apache web server
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start and enable Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Deploy a dynamic test homepage 
+      copy:
+        content: "<h1>welcome to the web server {{ ansible_hostname }}</h1>"
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: ALLOW hTTP traffic in firewall
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
