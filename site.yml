@@ -3,53 +3,55 @@
 - name: Apply base configuration to all servers
   hosts: all:!control
   become: true
+  serial: 1
+
   tasks:
-    - name: Clean package manager cache to fix corruption
+    - name: Clean package manager cache
       command: dnf clean all
 
-    - name: Install common packages and force fresh firewall utilities
-      yum:
+    - name: Install common packages
+      dnf:
         name:
           - vim
           - git
           - curl
           - wget
           - firewalld
-          - python3-firewall
         state: present
 
-    - name: Force start and enable firewalld daemon service
+    - name: Start and enable firewalld
       service:
         name: firewalld
-        state: restarted
+        state: started
         enabled: true
 
+
 # Task 2 : specific configuration for web servers
-- name: Configure web Application servers
+- name: Configure web application servers
   hosts: webservers
   become: true
+
   tasks:
-    - name: Install Apache web server
-      yum:
+    - name: Install Apache
+      dnf:
         name: httpd
         state: present
 
-    - name: Start and enable Apache service
+    - name: Start Apache
       service:
         name: httpd
         state: started
         enabled: true
 
-    - name: Deploy a dynamic test homepage 
+    - name: Deploy test page
       copy:
-        content: "<h1>welcome to the web server {{ ansible_hostname }}</h1>"
+        content: "<h1>Welcome to {{ ansible_hostname }}</h1>"
         dest: /var/www/html/index.html
         mode: '0644'
 
-    - name: ALLOW HTTP traffic using bulletproof system command
-      command: firewall-cmd --permanent --add-service=http
-      changed_when: true
-
-    - name: Reload firewall daemon to apply the change
-      command: firewall-cmd --reload
-      changed_when: true
+    - name: Allow HTTP traffic
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
