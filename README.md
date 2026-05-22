@@ -409,14 +409,28 @@ That made the project more realistic and more useful for interviews.
 Add screenshots of:
 
 * Terraform apply output
+![alt text](image.png)
+
 * AWS instances
+![alt text](image-1.png)
+
 * inventory file
+![alt text](image-2.png)
+
 * Ansible playbook run
+![alt text](image-3.png)
+
 * Apache service status
+![alt text](image-4.png)
+
 * HAProxy service status
+![alt text](image-5.png)
+
 * NFS export and mount output
-* `curl` test from the load balancer
-* `free -h` showing swap
+  ![alt text](image-6.png)
+
+* `curl` test from the load balancer 
+  ![alt text](image-7.png)
 
 ---
 
