@@ -78,8 +78,8 @@
 
           backend http_back
               balance roundrobin
-              server web1 172.31.1.155:80 check
-              server web2 172.31.1.88:80 check
+              server web1 172.31.1.39:80 check
+              server web2 172.31.1.65:80 check
 
     - name: Start and enable HAProxy service
       service:
