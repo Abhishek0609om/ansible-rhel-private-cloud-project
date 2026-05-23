@@ -385,31 +385,31 @@ That made the project more realistic and more useful for interviews.
 Add screenshots of:
 
 * Terraform apply output
-![alt text](image.png)
+![alt text](Images/image-12.png)
 
 * AWS instances
-![alt text](image-1.png)
+![alt text](Images/image-13.png)
 
 * inventory file
-![alt text](image-2.png)
+![alt text](Images/image-14.png)
 
 * Ansible ping Check
-![alt text](image-10.png)
+![alt text](Images/image-4.png)
 
 * Ansible playbook run
-![alt text](image-3.png)
+![alt text](Images/image-8.png)
 
 * Apache service status
-![alt text](image-8.png)
+![alt text](Images/image-2.png)
 
 * HAProxy service status
-![alt text](image-6.png)
+![alt text](Images/image-3.png)
 
 * NFS export and mount output
-![alt text](image-9.png)
+![alt text](Images/image-15.png)
 
 * `curl` test from the load balancer 
-!![alt text](image-7.png)
+![alt text](Images/image-1.png)
 
 ---
 
