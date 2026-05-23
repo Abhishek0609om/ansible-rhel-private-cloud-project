@@ -1,8 +1,22 @@
-# RHCE Private Cloud Cluster Automation Project
+# RHCE Private Cloud Cluster Automation Project Architecture
+
+![Architecture Diagram](image-8.png)
 
 A fully automated private cloud cluster built on AWS using **Terraform** for infrastructure provisioning and **Ansible** for configuration management. The project was designed to mirror a real-world enterprise deployment workflow: provision cloud resources, configure services across multiple nodes, centralize storage, balance application traffic, and validate the complete stack end to end.
 
 ---
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Architecture Overview](#architecture-overview)
+3. [Prerequisites](#prerequisites-Checklist)
+4. [Infrastructure Design](#infrastructure-Design)
+5. [Ansible Configuration](#ansible-configuration)
+6. [Playbook Execution](#playbook-execution)
+7. [Validation](#validation)
+8. [Troubleshooting](#troubleshooting)
+9. [Screenshots](#screenshots)
+10. [Author Notes](#author-notes)
+  
 
 ## Project Overview
 
@@ -17,43 +31,6 @@ The final architecture includes:
 * a **database node** for backend database services
 
 The workflow was built for learning, validation, and job readiness. It highlights infrastructure automation, Linux administration, service orchestration, troubleshooting, and version control discipline.
-
----
-
-## Architecture
-
-```text
-                      ┌────────────────────────┐
-                      │      Control Node      │
-                      │     (Ansible Engine)   │
-                      └───────────┬────────────┘
-                                  │
-                                  ▼
-                      ┌────────────────────────┐
-                      │     Load Balancer      │
-                      │       (HAProxy)        │
-                      └───────────┬────────────┘
-                                  │
-                     ┌────────────┴────────────┐
-                     ▼                         ▼
-          ┌────────────────────┐    ┌────────────────────┐
-          │    Web Server 1    │    │    Web Server 2    │
-          │      (Apache)      │    │      (Apache)      │
-          └──────────┬─────────┘    └─────────┬──────────┘
-                     │     Mounted via NFS     │
-                     └────────────┬────────────┘
-                                  ▼
-                      ┌────────────────────────┐
-                      │      Storage Node      │
-                      │      (NFS Server)      │
-                      └────────────────────────┘
-                                  ▲
-                                  │
-                      ┌───────────┴────────────┐
-                      │     Database Node      │
-                      │      (MariaDB)         │
-                      └────────────────────────┘
-```
 
 ---
 
@@ -98,7 +75,7 @@ This approach keeps the project modular, repeatable, and easy to extend.
 
 ---
 
-## Repository Structure
+## Architecture Overview
 
 ```text
 .
@@ -205,7 +182,7 @@ Terraform was used to create the base AWS environment.
 
 ---
 
-## Ansible Design
+## Ansible Configuration
 
 Ansible was used from the control node to manage the rest of the cluster over SSH.
 
@@ -221,7 +198,7 @@ The inventory separates nodes by role:
 
 This makes the automation readable and easy to maintain.
 
-### Playbook Strategy
+### Playbook Execution
 
 The automation was divided into logical tasks:
 
@@ -298,7 +275,7 @@ The database node is prepared for backend database services and private network 
 
 ---
 
-## Troubleshooting Notes
+## Troubleshooting
 
 This project included real troubleshooting, which became one of its strongest learning outcomes.
 
@@ -404,7 +381,7 @@ That made the project more realistic and more useful for interviews.
 
 ---
 
-## Screenshots to Add
+## Screenshots
 
 Add screenshots of:
 
@@ -427,10 +404,10 @@ Add screenshots of:
 ![alt text](image-5.png)
 
 * NFS export and mount output
-  ![alt text](image-6.png)
+![alt text](image-6.png)
 
 * `curl` test from the load balancer 
-  ![alt text](image-7.png)
+![alt text](image-7.png)
 
 ---
 
@@ -459,8 +436,12 @@ The most important outcome is not only that the project works, but that it was d
 
 ## Author Notes
 
-This project was built as a hands-on infrastructure and automation project to strengthen practical skills in Terraform, AWS, GitHub, Linux administration, and Ansible-based configuration management.
+This project is maintained by **[Abhishek](https://github.com/Abhishek0609om)** 🚀.  
+Your feedback and contributions are welcome!
 
-The environment was intentionally designed using Infrastructure as Code principles, where cloud resources are provisioned through Terraform and configured through Ansible automation. The workflow follows a Git-based approach: development and updates are managed locally, pushed to GitHub, and deployed from the Control Node.
+📧 **Connect with me:**
+- **GitHub**: [@Abhishek0609om](https://github.com/Abhishek0609om)
+- **LinkedIn**: [Abhishek](www.linkedin.com/in/abhishek-b-aura)
+- **Email**: [stoicorion22@gmail.com](mailto:stoicorion22@gmail.com)
 
-The implementation may continue evolving with improvements such as better playbook modularization, additional monitoring, stronger validation checks, and enhanced automation practices.
+---
