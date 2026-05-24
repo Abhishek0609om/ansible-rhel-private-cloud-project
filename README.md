@@ -1,6 +1,5 @@
 # RHCE Private Cloud Cluster Automation Project Architecture
-![Architecture Overview](Images/image-arc.png)
-
+![Architecture Overview](Images/image-5.png)
 A fully automated private cloud cluster built on AWS using **Terraform** for infrastructure provisioning and **Ansible** for configuration management. The project was designed to mirror a real-world enterprise deployment workflow: provision cloud resources, configure services across multiple nodes, centralize storage, balance application traffic, and validate the complete stack end to end.
 
 ---
